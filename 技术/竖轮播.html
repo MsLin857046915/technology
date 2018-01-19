@@ -1,0 +1,102 @@
+<!-- 竖轮播 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<style>
+    /*轮播*/
+    .board__content--scroll{
+        height: 292px;
+        position: relative;
+        overflow: hidden;
+        font-size: 18px;
+        line-height: 23px;
+        margin-top: 14px;
+        text-align: left;
+        width: 100%;
+    }
+    .board__content--scroll .task-list{
+        position: absolute;
+        width: 100%;
+    }
+    .board__content--scroll .task-list li.unit{
+        height: 28px;
+        width: 100%;
+        line-height: 28px;
+        background: #DF3F00;
+        padding-left: 15px;
+        border-bottom: 5px solid #FFFFFF;
+        font-size: 14px;
+    }
+</style>
+<body>
+    <div class="board__content--scroll">
+        <ul class="task-list">
+            
+        </ul>
+    </div>
+    <script>
+        (function(){
+            $.ajax({
+                type: "post",
+                contentType: "application/json",
+                url: "/drall?dra=list",
+                datatype: "json",
+                success: function (row) {
+                    var html = '';
+                    var row=$.parseJSON(row)["data"]
+                    $.each(row, function(index,val){
+                    html += `
+                        <li class="unit">用户 ${row[index].user_wechat_nickname} 在${row[index].time}完成任务,提现${row[index].money}元</span></li>
+                        `;
+                    });
+                    $('.task-list').html(html);
+                    var $parent = $('.board__content--scroll');
+                    var ul = $('.task-list');
+                    var liHeight = $('.unit').outerHeight();
+                    var liLength = $('.task-list li').length;
+                    var ulHeight = liHeight * liLength;
+                    var ulc = ul.clone();
+                    $parent.append(ulc);
+                    ul.css({top: 0});
+                    ulc.css({top: ulHeight});
+
+                    var timer;
+                    timer = setInterval(function(){
+                        scroll(liHeight, ulHeight);
+                    },2000)
+                    //向上滚动效果
+                    function scroll(liHeight, ulHeight) {
+                        if (parseInt(ul.css('top')) <= -ulHeight) {
+                            ul.css({top: 0});
+                            ul.animate({
+                                top: parseInt(ul.css('top')) - liHeight
+                            },500);
+                        } else {
+                            ul.animate({
+                                top: parseInt(ul.css('top')) - liHeight
+                            },500);
+                        }
+
+                        if (parseInt(ulc.css('top')) <= 0) {
+                            ulc.css({top: ulHeight});
+                            ulc.animate({
+                                top: parseInt(ulc.css('top')) - liHeight
+                            },500);
+                        } else {
+                            ulc.animate({
+                                top: parseInt(ulc.css('top')) - liHeight
+                            },500);
+                        }
+                    }
+                }
+            });
+
+        })()
+    </script>
+</body>
+</html>
