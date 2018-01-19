@@ -1,0 +1,176 @@
+<!-- 横轮播 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<style>
+    /*轮播图*/
+    .header_img {
+        width: 908px;
+        height: 326.4px;
+        position: relative;
+        overflow: hidden;
+    }
+    .header_img .header_imglist {
+        width: 6000px;
+        height: 326.4px;
+        position: absolute;
+        left: 0px;
+        top: 0px;
+    }
+
+    .header_img .header_imglist img {
+        width: 908px;
+        height: 326.4px;
+    }
+
+    .header_img .header_imglist li {
+        float: left;
+    }
+
+    .header_img .header_showNav {
+        position: absolute;
+        width: 100%;
+        bottom: 10px;
+        left: 0px;
+        text-align: center;
+        font-size: 0px;
+    }
+
+    .header_img .header_showNav li {
+        width: 12.8px;
+        height: 12.8px;
+        background: rgba(255,255,255,0.50);
+        border-radius: 50%;
+        display: inline-block;
+        margin: 7px 8px;
+        cursor: pointer;
+    }
+
+    .header_img .header_showNav li.on {
+        background: #3987F4;
+    }
+
+    .header_img .btn {
+        width: 40px;
+        height: 70px;
+        background-color: #808080;
+        opacity: 0.5;
+        position: absolute;
+        top: 50%;
+        margin-top: -45px;
+        cursor: pointer;
+        text-align: center;
+        line-height: 70px;
+        font-size: 40px;
+        color: #fff;
+        font-family: "宋体";
+        display: none;
+    }
+
+    .header_img .btn_l {
+        left: 0px;
+    }
+
+    .header_img .btn_r {
+        right: 0px;
+    }
+
+    .header_img:hover .btn {
+        display: block;
+    }
+</style>
+<body>
+    <div class="header_img">
+        <!--图片布局开始-->
+        <ul class="header_imglist">
+            <li><img src="/static/xhcw/images/banner0.jpg" alt="" /></li>
+            {* <li><img src="/static/xhcw/images/banner1.jpg" alt="" /></li>
+            <li><img src="/static/xhcw/images/banner3.jpg" alt="" /></li>
+            <li><img src="/static/xhcw/images/banner2.jpg" alt="" /></li> *}
+        </ul>
+        <!--图片布局结束-->
+
+        <!--按钮布局开始-->
+        <ul class="header_showNav">
+
+        </ul>
+        <!--左右按钮布局开始-->
+        <div class="btn btn_l">&lt;</div>
+        <div class="btn btn_r">&gt;</div>
+        <!--按钮布局结束-->
+    </div>
+    <script>
+        $(document).ready(function() {
+            var i = 0;
+            var Width=$(".header_img").innerWidth();
+            var clone = $(".header_img .header_imglist li").first().clone(); //克隆第一张图片
+            $(".header_img .header_imglist").append(clone); //复制到列表最后
+            var size = $(".header_img .header_imglist li").size();
+            for (var j = 0; j < size - 1; j++) {
+                $(".header_img .header_showNav").append("<li></li>");
+            }
+            $(".header_img .header_showNav li").first().addClass("on");
+            /*自动轮播*/
+            var t = setInterval(function() {
+                i++;
+                move();
+                console.log(t)
+            }, 5000);
+            /*鼠标悬停事件*/
+            $(".header_img").hover(function() {
+                clearInterval(t); //鼠标悬停时清除定时器
+            }, function() {
+                clearInterval(t); //鼠标悬停时清除定时器
+                t = setInterval(function() {
+                    i++;
+                    move();
+                console.log(t,1)
+                }, 5000); //鼠标移出时清除定时器
+            });
+
+            /*鼠标滑入原点事件*/
+            $(".header_img .header_showNav li").hover(function() {
+                var index = $(this).index(); //获取当前索引值
+                i = index;
+                $(".header_img .header_imglist").stop().animate({ left: -index * Width }, 500);
+                $(this).addClass("on").siblings().removeClass("on");
+            });
+
+            /*向左按钮*/
+            $(".header_img .btn_l").click(function() {
+                i--;
+                move();
+            })
+
+            /*向右按钮*/
+            $(".header_img .btn_r").click(function() {
+                i++;
+                move();
+            })
+
+            /*移动事件*/
+            function move() {
+                if (i == size) {
+                    $(".header_img .header_imglist").css({ left: 0 });
+                    i = 1;
+                }
+                if (i == -1) {
+                    $(".header_img .header_imglist").css({ left: -(size - 1) * Width });
+                    i = size - 2;
+                }
+                $(".header_img .header_imglist").stop().animate({ left: -i * Width }, 500);
+                if (i == size - 1) {
+                    $(".header_img .header_showNav li").eq(0).addClass("on").siblings().removeClass("on");
+                } else {
+                    $(".header_img .header_showNav li").eq(i).addClass("on").siblings().removeClass("on");
+                }
+            }
+        })    
+    </script>
+</body>
+</html>
